@@ -100,7 +100,11 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
 
     this.ajax(this.buildURL(root, id), "DELETE", {
       success: function(json) {
-        this.didSaveRecord(store, type, record, json);
+        Ember.run(this, function(){
+          console.log('didSaveRecord Delete');
+          this.didSaveRecord(store, type, record, json);
+          console.log('didSaveRecordEnd Delete');
+        });
       }
     });
   },
@@ -126,13 +130,26 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
     });
   },
 
+  /*
+  didFindQuery: function(store, type, payload, recordArray) {
+    console.log('didFindQuery..');
+    console.log(payload);
+    var loader = DS.loaderFor(store);
+
+    loader.populateArray = function(data) {
+      recordArray.load(data);
+    };
+
+    get(this, 'serializer').extractMany(loader, payload, type);
+  },
+
   didFindMany: function(store, type, json) {
     store.loadMany(type, json.objects);
   },
-
   didFindQuery: function(store, type, json, recordArray) {
     recordArray.load(json.objects);
   },
+  */
 
   buildURL: function(record, suffix) {
     var url = this._super(record, suffix);

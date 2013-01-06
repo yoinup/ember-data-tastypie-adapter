@@ -45,22 +45,35 @@ DS.DjangoTastypieSerializer = DS.JSONSerializer.extend({
   /**
     Tastypie adapter does not support the sideloading feature
     */
-  extract: function(loader, json, type) {
+  extract: function(loader, json, type, record) {
     this.extractMeta(loader, type, json);
     this.sideload(loader, type, json);
 
     if (json) {
+      if (record) { loader.updateId(record, json); }
       this.extractRecordRepresentation(loader, type, json);
     }
   },
 
-  extractMany: function(loader, json, type) {
+  extractMany: function(loader, json, type, records) {
+    console.log('extractMany IN');
     this.extractMeta(loader, type, json);
     this.sideload(loader, type, json);
 
     if (json.objects) {
-      loader.loadMany(type, json.objects);
+      var objects = json.objects, references = [];
+      if (records) { records = records.toArray(); }
+
+      for (var i = 0; i < objects.length; i++) {
+        if (records) { loader.updateId(records[i], objects[i]); }
+        var reference = this.extractRecordRepresentation(loader, type, objects[i]);
+        references.push(reference);
+      }
+
+      console.log('populateArray...');
+      loader.populateArray(references);
     }
+    console.log('extractMany OUT');
   },
 
   extractMeta: function(loader, type, json) {
