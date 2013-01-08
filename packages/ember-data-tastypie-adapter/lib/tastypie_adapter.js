@@ -54,6 +54,7 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
   */
   createRecord: function(store, type, record) {
     var data,
+        self = this,
         root = this.rootForType(type);
 
     data = record.serialize();
@@ -61,7 +62,9 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
     this.ajax(this.buildURL(root), "POST", {
       data: data,
       success: function(json) {
-        this.didCreateRecord(store, type, record, json);
+        Ember.run(this, function(){
+          self.didCreateRecord(store, type, record, json);
+        });
       }
     });
   },
@@ -72,6 +75,8 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
   */
   updateRecord: function(store, type, record) {
     var id,
+        self = this,
+        root,
         data;
 
     id = Em.get(record, 'id');
@@ -82,7 +87,9 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
     this.ajax(this.buildURL(root, id), "PUT", {
       data: data,
       success: function(json) {
-        this.didSaveRecord(store, type, record, json);
+        Ember.run(this, function(){
+          self.didSaveRecord(store, type, record, json);
+        });
       }
     });
   },
@@ -101,9 +108,7 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
     this.ajax(this.buildURL(root, id), "DELETE", {
       success: function(json) {
         Ember.run(this, function(){
-          console.log('didSaveRecord Delete');
           this.didSaveRecord(store, type, record, json);
-          console.log('didSaveRecordEnd Delete');
         });
       }
     });
@@ -111,6 +116,7 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
 
   findMany: function(store, type, ids) {
     var url,
+        self = this,
         root = this.rootForType(type);
 
     ids = this.serializeIds(ids);
@@ -125,7 +131,10 @@ DS.DjangoTastypieAdapter = DS.RESTAdapter.extend({
 
     this.ajax(url, "GET", {
       success: function(json) {
-        this.didFindMany(store, type, json);
+
+        Ember.run(this, function(){
+          self.didFindMany(store, type, json);
+        });
       }
     });
   },

@@ -56,7 +56,6 @@ DS.DjangoTastypieSerializer = DS.JSONSerializer.extend({
   },
 
   extractMany: function(loader, json, type, records) {
-    console.log('extractMany IN');
     this.extractMeta(loader, type, json);
     this.sideload(loader, type, json);
 
@@ -70,10 +69,8 @@ DS.DjangoTastypieSerializer = DS.JSONSerializer.extend({
         references.push(reference);
       }
 
-      console.log('populateArray...');
       loader.populateArray(references);
     }
-    console.log('extractMany OUT');
   },
 
   extractMeta: function(loader, type, json) {
